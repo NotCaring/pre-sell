@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#FCF3F2">
+  <title>Confirme para Continuar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      background: #FCF3F2;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 18px;
+      font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overscroll-behavior: none;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: #FFFFFF;
+      border: 1px solid #F3D8E1;
+      border-radius: 24px;
+      padding: 34px 20px;
+      text-align: center;
+      box-shadow:
+        0 16px 40px -14px rgba(196, 79, 126, 0.16),
+        0 2px 10px rgba(196, 79, 126, 0.04);
+    }
+
+    .card h1 {
+      font-size: 22.5px;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.025em;
+      color: #2A1420;
+      margin-bottom: 20px;
+    }
+
+    .track {
+      position: relative;
+      height: 60px;
+      background: #F8E7EF;
+      border: 1.5px solid #E7C5D4;
+      border-radius: 18px;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      background: #F2D5E2;
+    }
+
+    .label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 600;
+      color: #C24F7E;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .knob {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 49px;
+      height: 49px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #FFFFFF;
+      border: 1px solid #E9CCD9;
+      border-radius: 13px;
+      box-shadow: 0 2px 6px rgba(120, 40, 80, 0.10);
+      color: #2A1420;
+      cursor: grab;
+      touch-action: none;
+      outline: none;
+      will-change: transform;
+    }
+
+    .knob:focus-visible {
+      box-shadow: 0 0 0 2px #C24F7E;
+    }
+
+    .track.dragging .knob {
+      cursor: grabbing;
+    }
+
+    .knob svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .knob .icon-check {
+      display: none;
+    }
+
+    .track.done .knob .icon-arrow {
+      display: none;
+    }
+
+    .track.done .knob .icon-check {
+      display: block;
+    }
+
+    .track.animating .knob,
+    .track.animating .fill,
+    .track.animating .label {
+      transition:
+        transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+        width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+        opacity 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Confirme para Continuar</h1>
+
+    <div class="track" id="track">
+      <div class="fill" id="fill"></div>
+      <span class="label" id="label">Deslize para continuar &gt;&gt;</span>
+      <button class="knob" id="knob" type="button" aria-label="Deslize para continuar">
+        <svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+        <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 6 9 17l-5-5"/>
+        </svg>
+      </button>
+    </div>
+
+    <noscript>
+      <p style="margin-top:16px"><a href="https://telegram.me/nov1nh4s_na_m1ra_bot" style="color:#C24F7E;font-weight:600">Continuar</a></p>
+    </noscript>
+  </main>
+
+  <script>
+    (function () {
+      var REDIRECT_URL = "https://telegram.me/nov1nh4s_na_m1ra_bot";
+      var THRESHOLD = 0.85; // fração do trilho que precisa ser arrastada
+      var INSET = 4;        // distância do botão até a borda interna do trilho
+
+      var track = document.getElementById("track");
+      var knob = document.getElementById("knob");
+      var fill = document.getElementById("fill");
+      var label = document.getElementById("label");
+
+      var x = 0;
+      var startX = 0;
+      var startPos = 0;
+      var dragging = false;
+      var done = false;
+
+      function maxX() {
+        return track.clientWidth - knob.offsetWidth - INSET * 2;
+      }
+
+      function render(pos) {
+        var m = maxX();
+        var p = m > 0 ? pos / m : 0;
+        knob.style.transform = "translateX(" + pos + "px)";
+        fill.style.width = (pos + INSET + knob.offsetWidth / 2) + "px";
+        fill.style.opacity = String(Math.min(1, p * 3));
+        label.style.opacity = String(Math.max(0, 1 - p * 1.6));
+      }
+
+      function setPos(pos, animate) {
+        track.classList.toggle("animating", !!animate);
+        x = pos;
+        render(pos);
+      }
+
+      function finish() {
+        if (done) return;
+        done = true;
+        dragging = false;
+        track.classList.remove("dragging");
+        track.classList.add("done");
+        setPos(maxX(), true);
+        setTimeout(function () {
+          window.location.href = REDIRECT_URL;
+        }, 250);
+      }
+
+      function release() {
+        if (!dragging) return;
+        dragging = false;
+        track.classList.remove("dragging");
+        if (x >= maxX() * THRESHOLD) finish();
+        else setPos(0, true);
+      }
+
+      knob.addEventListener("pointerdown", function (e) {
+        if (done) return;
+        dragging = true;
+        startX = e.clientX;
+        startPos = x;
+        track.classList.remove("animating");
+        track.classList.add("dragging");
+        knob.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      });
+
+      knob.addEventListener("pointermove", function (e) {
+        if (!dragging) return;
+        var m = maxX();
+        x = Math.min(m, Math.max(0, startPos + e.clientX - startX));
+        render(x);
+        if (x >= m) finish();
+      });
+
+      knob.addEventListener("pointerup", release);
+      knob.addEventListener("pointercancel", release);
+
+      knob.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") {
+          e.preventDefault();
+          finish();
+        }
+      });
+
+      window.addEventListener("resize", function () {
+        setPos(done ? maxX() : 0, false);
+      });
+
+      // Ao voltar pelo botão "voltar" do navegador, a página sai do cache: reseta o slider
+      window.addEventListener("pageshow", function (e) {
+        if (!e.persisted) return;
+        done = false;
+        dragging = false;
+        track.classList.remove("done", "dragging");
+        setPos(0, false);
+      });
+    })();
+  </script>
+</body>
+</html>
