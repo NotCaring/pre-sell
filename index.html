@@ -1,270 +1,238 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#FCF3F2">
-  <title>Confirme para Continuar</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;800&display=swap" rel="stylesheet">
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Verificação</title>
+<style>
+  :root{
+    --bg-0:#050d18;
+    --bg-1:#0a1a2e;
+    --bg-2:#0d2340;
+    --grid:rgba(90,140,200,.06);
+    --blue:#5ea0e8;
+    --blue-soft:#7cb3e8;
+    --yellow:#ffc21f;
+    --green:#22c55e;
+    --green-glow:rgba(34,197,94,.55);
+    --white:#ffffff;
+    --muted:#4a5a6e;
+  }
 
-    html, body {
-      height: 100%;
-      background: #FCF3F2;
-    }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 
-    body {
-      min-height: 100vh;
-      min-height: 100dvh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 18px;
-      font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      overscroll-behavior: none;
-    }
+  html,body{height:100%;}
 
-    .card {
-      width: 100%;
-      max-width: 420px;
-      background: #FFFFFF;
-      border: 1px solid #F3D8E1;
-      border-radius: 24px;
-      padding: 34px 20px;
-      text-align: center;
-      box-shadow:
-        0 16px 40px -14px rgba(196, 79, 126, 0.16),
-        0 2px 10px rgba(196, 79, 126, 0.04);
-    }
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--bg-0);
+    color:var(--white);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+  }
 
-    .card h1 {
-      font-size: 22.5px;
-      font-weight: 800;
-      line-height: 1.25;
-      letter-spacing: -0.025em;
-      color: #2A1420;
-      margin-bottom: 20px;
-    }
+  /* Fundo com brilho radial + grid */
+  .bg{
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 42%, var(--bg-2) 0%, var(--bg-1) 45%, var(--bg-0) 100%);
+    z-index:0;
+  }
+  .bg::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      linear-gradient(var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 80% 70% at 50% 45%,#000 30%,transparent 90%);
+    -webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 45%,#000 30%,transparent 90%);
+  }
 
-    .track {
-      position: relative;
-      height: 60px;
-      background: #F8E7EF;
-      border: 1.5px solid #E7C5D4;
-      border-radius: 18px;
-      overflow: hidden;
-      touch-action: none;
-      user-select: none;
-      -webkit-user-select: none;
-    }
+  .wrap{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:440px;
+    padding:0 24px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
 
-    .fill {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      background: #F2D5E2;
-    }
+  /* Badge */
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    padding:11px 22px;
+    border-radius:999px;
+    background:linear-gradient(180deg,rgba(30,64,110,.45),rgba(18,40,72,.35));
+    border:1px solid rgba(94,160,232,.35);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+    margin-bottom:34px;
+  }
+  .badge .bolt{font-size:15px;filter:drop-shadow(0 0 6px rgba(255,194,31,.6));}
+  .badge span{
+    color:var(--blue-soft);
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:3px;
+  }
 
-    .label {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      font-weight: 600;
-      color: #C24F7E;
-      white-space: nowrap;
-      pointer-events: none;
-    }
+  /* Título */
+  h1{
+    font-size:40px;
+    font-weight:900;
+    font-style:normal;
+    letter-spacing:.5px;
+    color:var(--white);
+    margin-bottom:64px;
+  }
 
-    .knob {
-      position: absolute;
-      top: 4px;
-      left: 4px;
-      width: 49px;
-      height: 49px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #FFFFFF;
-      border: 1px solid #E9CCD9;
-      border-radius: 13px;
-      box-shadow: 0 2px 6px rgba(120, 40, 80, 0.10);
-      color: #2A1420;
-      cursor: grab;
-      touch-action: none;
-      outline: none;
-      will-change: transform;
-    }
+  /* Círculo verde */
+  .circle-area{
+    position:relative;
+    width:230px;
+    height:230px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:60px;
+  }
+  .ring-glow{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    background:radial-gradient(circle,var(--green-glow) 0%,transparent 68%);
+    filter:blur(6px);
+    animation:pulse 1.4s ease-in-out infinite;
+  }
+  /* Trilho de fundo do anel */
+  .ring-track{
+    position:absolute;
+    inset:8px;
+    border-radius:50%;
+    border:7px solid rgba(34,197,94,.15);
+  }
+  /* Anel de progresso (carrega no sentido horário) */
+  .progress-ring{
+    position:absolute;
+    inset:8px;
+    width:calc(100% - 16px);
+    height:calc(100% - 16px);
+    transform:rotate(-90deg);
+    filter:drop-shadow(0 0 10px var(--green-glow));
+  }
+  .progress-ring circle{
+    fill:none;
+    stroke:var(--green);
+    stroke-width:7;
+    stroke-linecap:round;
+    stroke-dasharray:635;
+    stroke-dashoffset:635;
+    animation:fill .6s linear forwards;
+  }
+  .ring-inner{
+    position:absolute;
+    inset:26px;
+    border-radius:50%;
+    background:radial-gradient(circle at 50% 40%,#14314a 0%,#0a1c30 70%,#071522 100%);
+    border:2px solid rgba(34,197,94,.4);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .check{
+    width:78px;
+    height:78px;
+    stroke:#0a1420;
+    stroke-width:9;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    fill:none;
+  }
+  .check path{
+    stroke-dasharray:70;
+    stroke-dashoffset:70;
+    animation:draw .5s ease-out .05s forwards;
+  }
 
-    .knob:focus-visible {
-      box-shadow: 0 0 0 2px #C24F7E;
-    }
+  /* Status inferior */
+  .status{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:22px;
+    color:#cdd8e4;
+    font-weight:400;
+  }
+  .spinner{
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    border:3px solid rgba(94,160,232,.2);
+    border-top-color:var(--blue);
+    animation:spin .7s linear infinite;
+  }
+  .status .ok{color:var(--green);font-weight:700;}
 
-    .track.dragging .knob {
-      cursor: grabbing;
-    }
+  @keyframes pulse{
+    0%,100%{opacity:.55;transform:scale(.96);}
+    50%{opacity:1;transform:scale(1.04);}
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes fill{to{stroke-dashoffset:0;}}
+  @keyframes draw{to{stroke-dashoffset:0;}}
 
-    .knob svg {
-      width: 22px;
-      height: 22px;
-    }
-
-    .knob .icon-check {
-      display: none;
-    }
-
-    .track.done .knob .icon-arrow {
-      display: none;
-    }
-
-    .track.done .knob .icon-check {
-      display: block;
-    }
-
-    .track.animating .knob,
-    .track.animating .fill,
-    .track.animating .label {
-      transition:
-        transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
-        width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
-        opacity 0.3s ease;
-    }
-  </style>
+  @media (max-width:380px){
+    h1{font-size:34px;}
+    .circle-area{width:200px;height:200px;}
+  }
+</style>
 </head>
 <body>
-  <main class="card">
-    <h1>Confirme para Continuar</h1>
+  <div class="bg"></div>
 
-    <div class="track" id="track">
-      <div class="fill" id="fill"></div>
-      <span class="label" id="label">Deslize para continuar &gt;&gt;</span>
-      <button class="knob" id="knob" type="button" aria-label="Deslize para continuar">
-        <svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m9 18 6-6-6-6"/>
-        </svg>
-        <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M20 6 9 17l-5-5"/>
-        </svg>
-      </button>
+  <div class="wrap">
+    <div class="badge">
+      <span class="bolt">⚡</span>
+      <span>VERIFICAÇÃO</span>
     </div>
 
-    <noscript>
-      <p style="margin-top:16px"><a href="https://telegram.me/nov1nh4s_na_m1ra_bot" style="color:#C24F7E;font-weight:600">Continuar</a></p>
-    </noscript>
-  </main>
+    <h1>Carregando</h1>
+
+    <div class="circle-area">
+      <div class="ring-glow"></div>
+      <div class="ring-track"></div>
+      <svg class="progress-ring" viewBox="0 0 214 214">
+        <circle cx="107" cy="107" r="101"/>
+      </svg>
+      <div class="ring-inner">
+        <svg class="check" viewBox="0 0 100 100">
+          <path d="M25 52 L43 70 L75 32"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="status">
+      <div class="spinner"></div>
+      <span><span class="ok">✓</span> Verificando...</span>
+    </div>
+  </div>
 
   <script>
-    (function () {
-      var REDIRECT_URL = "https://telegram.me/nov1nh4s_na_m1ra_bot";
-      var THRESHOLD = 0.85; // fração do trilho que precisa ser arrastada
-      var INSET = 4;        // distância do botão até a borda interna do trilho
-
-      var track = document.getElementById("track");
-      var knob = document.getElementById("knob");
-      var fill = document.getElementById("fill");
-      var label = document.getElementById("label");
-
-      var x = 0;
-      var startX = 0;
-      var startPos = 0;
-      var dragging = false;
-      var done = false;
-
-      function maxX() {
-        return track.clientWidth - knob.offsetWidth - INSET * 2;
-      }
-
-      function render(pos) {
-        var m = maxX();
-        var p = m > 0 ? pos / m : 0;
-        knob.style.transform = "translateX(" + pos + "px)";
-        fill.style.width = (pos + INSET + knob.offsetWidth / 2) + "px";
-        fill.style.opacity = String(Math.min(1, p * 3));
-        label.style.opacity = String(Math.max(0, 1 - p * 1.6));
-      }
-
-      function setPos(pos, animate) {
-        track.classList.toggle("animating", !!animate);
-        x = pos;
-        render(pos);
-      }
-
-      function finish() {
-        if (done) return;
-        done = true;
-        dragging = false;
-        track.classList.remove("dragging");
-        track.classList.add("done");
-        setPos(maxX(), true);
-        setTimeout(function () {
-          window.location.href = REDIRECT_URL;
-        }, 250);
-      }
-
-      function release() {
-        if (!dragging) return;
-        dragging = false;
-        track.classList.remove("dragging");
-        if (x >= maxX() * THRESHOLD) finish();
-        else setPos(0, true);
-      }
-
-      knob.addEventListener("pointerdown", function (e) {
-        if (done) return;
-        dragging = true;
-        startX = e.clientX;
-        startPos = x;
-        track.classList.remove("animating");
-        track.classList.add("dragging");
-        knob.setPointerCapture(e.pointerId);
-        e.preventDefault();
-      });
-
-      knob.addEventListener("pointermove", function (e) {
-        if (!dragging) return;
-        var m = maxX();
-        x = Math.min(m, Math.max(0, startPos + e.clientX - startX));
-        render(x);
-        if (x >= m) finish();
-      });
-
-      knob.addEventListener("pointerup", release);
-      knob.addEventListener("pointercancel", release);
-
-      knob.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") {
-          e.preventDefault();
-          finish();
-        }
-      });
-
-      window.addEventListener("resize", function () {
-        setPos(done ? maxX() : 0, false);
-      });
-
-      // Ao voltar pelo botão "voltar" do navegador, a página sai do cache: reseta o slider
-      window.addEventListener("pageshow", function (e) {
-        if (!e.persisted) return;
-        done = false;
-        dragging = false;
-        track.classList.remove("done", "dragging");
-        setPos(0, false);
-      });
-    })();
+    // Carrega por 0,6s e redireciona para o Google
+    setTimeout(function () {
+      window.location.href = "https://www.google.com";
+    }, 600);
   </script>
 </body>
 </html>
